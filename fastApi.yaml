@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+        - name: fastapi
+          image: fastapi # Make sure this points to your actual Docker image in a registry, unless it's a local development override
+          imagePullPolicy: Never # This is typically used for local development. For production, consider removing this or setting to IfNotPresent
+
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: fastapi # Corrected this line to properly match the labels of the pods created by the deployment
